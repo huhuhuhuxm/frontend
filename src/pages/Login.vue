@@ -122,12 +122,15 @@ const captcha = reactive({
   captchaBase64: '',
 });
 
+// 提交表单
 function onSubmit() {
-  console.log(userLoginInfo);
+  // 刷新验证码
+  getCaptcha();
+  // 清空表单
+  loginForm.value?.resetFields();
   // 用户登录
   userLogin(userLoginInfo)
     .then((res) => {
-      console.log('登录成功:', res.data.code);
       if (res.data.code === 200) {
         console.log('登录成功:', res);
         // 登录成功后保存token到本地
@@ -136,9 +139,15 @@ function onSubmit() {
         router.push('/');
         // 提交成功表单后重置表单
         loginForm.value?.resetFields();
-      } else if (res.data.code === 201) {
-        // 登录失败
-        console.log('登录失败:', res);
+      } else if (res.data.code === 218) {
+        // 验证码错误
+        console.log('验证码错误:', res.data.message);
+      } else if (res.data.code === 210) {
+        console.log('账号未注册:', res.data.message);
+      } else if (res.data.code === 215) {
+        console.log('密码错误:', res.data.message);
+      } else if (res.data.code === 2012) {
+        console.log('服务异常:', res.data.message);
       }
     })
     .catch((error) => {
