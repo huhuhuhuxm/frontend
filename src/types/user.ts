@@ -3,7 +3,7 @@
 // User登录参数
 interface UserLoginInfo {
   // 账号
-  username: string;
+  account: string;
   // 密码
   password: string;
   // 验证码
@@ -40,12 +40,5 @@ interface UserRegisterInfo {
   type: number;
 }
 
-// 返回验证码
-interface CaptchaInfo {
-  // 验证码
-  captcha: string;
-  // 验证码key
-  key: string;
-}
 
-export type { UserLoginInfo, userLoginResult, UserRegisterInfo, CaptchaInfo };
+export type { UserLoginInfo, userLoginResult, UserRegisterInfo };

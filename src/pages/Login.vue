@@ -3,16 +3,23 @@
     <div class="login-header">
       <h1>WELCOME</h1>
       <p>
-        还没有账户吗?<router-link class="user-register" to="/register">在此注册</router-link>
+        还没有账户吗?<router-link class="user-register" to="/register"
+          >在此注册</router-link
+        >
       </p>
     </div>
     <el-divider>OR</el-divider>
-    <el-form :model="form" :rules="rules" ref="loginForm" label-width="0px">
+    <el-form
+      :model="userLoginInfo"
+      :rules="rules"
+      ref="loginForm"
+      label-width="0px"
+    >
       <!-- 账号 -->
       <el-form-item prop="account">
         <el-input
           class="el-input-id"
-          v-model="form.account"
+          v-model="userLoginInfo.account"
           placeholder="账号"
           clearable
         >
@@ -23,17 +30,21 @@
       </el-form-item>
       <!-- 密码 -->
       <el-form-item prop="password">
-        <el-input v-model="form.password" placeholder="密码" show-password>
+        <el-input
+          v-model="userLoginInfo.password"
+          placeholder="密码"
+          show-password
+        >
           <template #prefix>
             <el-icon><Lock /></el-icon>
           </template>
         </el-input>
       </el-form-item>
       <!-- 验证码 -->
-      <el-form-item prop="code">
+      <el-form-item prop="captcha">
         <el-input
           class="el-input-code"
-          v-model="form.code"
+          v-model="userLoginInfo.captcha"
           placeholder="验证码"
           clearable
         >
@@ -42,13 +53,17 @@
           </template>
         </el-input>
         <!-- 图形验证码 -->
-        <!-- TODO 先用假数据，后续替换 -->
-        <el-image class="el-image-code" @click="getCaptcha" :src="captcha.captcha" alt="验证码">
+        <el-image
+          class="el-image-code"
+          @click="getCaptcha"
+          :src="captcha.captchaBase64"
+          alt="验证码"
+        >
         </el-image>
       </el-form-item>
 
       <el-form-item>
-        <el-checkbox class="auto-login" v-model="form.autoLogin"
+        <el-checkbox class="auto-login" v-model="isAutoLogin.autoLogin"
           >自动登录</el-checkbox
         >
         <RouterLink class="forgot-password" to="#">忘记密码?</RouterLink>
@@ -68,63 +83,74 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import { countdownEmits, ElForm, FormRules } from 'element-plus';
-import { generateCaptcha, userLogin, userRegister } from '@/apis/user';
-import { CaptchaInfo } from '@/types/user';
-interface FormData {
-  account: string;
-  password: string;
-  code: string;
-  autoLogin: boolean;
-}
+import { onMounted, reactive, ref, toRaw } from 'vue';
+import { ElForm, FormRules } from 'element-plus';
+import { generateCaptcha, userLogin } from '@/apis/user';
+import { UserLoginInfo } from '@/types/user';
+import router from '@/router';
+import { setToken } from '@/utils/token';
 
-const form = reactive<FormData>({
+// 登录用户表单信息
+const userLoginInfo = reactive<UserLoginInfo>({
+  // 账号
   account: '',
+  // 密码
   password: '',
-  code: '',
-  autoLogin: false,
+  // 验证码
+  captcha: '',
+  // 验证码key
+  key: '',
 });
 
+// 是否自动登录 默认值为false
+const isAutoLogin = reactive({
+  autoLogin: 'false',
+});
+
+// 表单规则校验
 const rules: FormRules = {
   account: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
 };
 
 const loginForm = ref<InstanceType<typeof ElForm>>();
 const loading = ref(false);
 
-const captcha = reactive<CaptchaInfo>({
-  captcha: '',
-  key: '',
-})
+// 验证码
+const captcha = reactive({
+  captchaBase64: '',
+});
 
-const onSubmit = () => {
-  console.log(loginForm.value);
-  loginForm.value?.validate((valid) => {
-    if (valid) {
-      console.log(form.account);
-
-      loading.value = true;
-      // 模拟登录逻辑
-      setTimeout(() => {
-        alert('登录成功');
-        loading.value = false;
-      }, 1000);
-    } else {
-      console.log('表单验证失败');
-    }
-  });
-};
+function onSubmit() {
+  console.log(userLoginInfo);
+  // 用户登录
+  userLogin(userLoginInfo)
+    .then((res) => {
+      console.log('登录成功:', res.data.code);
+      if (res.data.code === 200) {
+        console.log('登录成功:', res);
+        // 登录成功后保存token到本地
+        setToken(res.data.data.token);
+        // 登录成功后跳转到首页
+        router.push('/');
+        // 提交成功表单后重置表单
+        loginForm.value?.resetFields();
+      } else if (res.data.code === 201) {
+        // 登录失败
+        console.log('登录失败:', res);
+      }
+    })
+    .catch((error) => {
+      console.log('登录失败:'); // 请求失败，打印错误信息
+    });
+}
 
 // 获取验证码
 async function getCaptcha() {
   const result = (await generateCaptcha()).data.data;
-  console.log(result);
-  captcha.captcha = `data:image/png;base64,${result.captcha}`;
-  captcha.key = result.key;
-  console.log(captcha);
+  captcha.captchaBase64 = `data:image/png;base64,${result.captcha}`;
+  userLoginInfo.key = result.key;
 }
 
 // 挂载完毕
@@ -132,7 +158,6 @@ onMounted(() => {
   // 获取验证码
   getCaptcha();
 });
-
 </script>
 
 <style scoped lang="scss">

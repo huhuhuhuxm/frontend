@@ -1,6 +1,6 @@
 // 用户模块相关所有请求
 import { Result } from '@/types/result';
-import { CaptchaInfo, UserLoginInfo, UserRegisterInfo } from '@/types/user';
+import { UserLoginInfo, UserRegisterInfo } from '@/types/user';
 import { request } from '@/utils';
 import exp from 'constants';
 
@@ -17,12 +17,17 @@ import exp from 'constants';
 // }
 
 // 用户登录
-export function userLogin(fromData: UserLoginInfo) {
+export function userLogin(fromData:any) {
+  console.log('用户登录'+ JSON.stringify(fromData));
   return request({
     url: '/user-api/user/v1/login',
-    method: 'post',
-    data: fromData
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: JSON.stringify(fromData)
   })
+  // return request.post('/user-api/user/v1/login', fromData)
 }
 
 // 用户注册
