@@ -84,7 +84,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, toRaw } from 'vue';
-import { ElForm, FormRules } from 'element-plus';
+import { ElForm, ElMessage, FormRules } from 'element-plus';
 import { generateCaptcha, userLogin } from '@/apis/user';
 import { UserLoginInfo } from '@/types/user';
 import router from '@/router';
@@ -126,8 +126,6 @@ const captcha = reactive({
 function onSubmit() {
   // 刷新验证码
   getCaptcha();
-  // 清空表单
-  loginForm.value?.resetFields();
   // 用户登录
   userLogin(userLoginInfo)
     .then((res) => {
@@ -137,21 +135,47 @@ function onSubmit() {
         setToken(res.data.data.token);
         // 登录成功后跳转到首页
         router.push('/');
+        // 成功消息提示
+        ElMessage({
+          message: '登录成功！！！',
+          type: 'success',
+        });
         // 提交成功表单后重置表单
         loginForm.value?.resetFields();
       } else if (res.data.code === 218) {
-        // 验证码错误
-        console.log('验证码错误:', res.data.message);
+        // 验证码错误消息提示
+        ElMessage({
+          message: '验证码错误！！！',
+          type: 'error',
+        });
       } else if (res.data.code === 210) {
-        console.log('账号未注册:', res.data.message);
+        // 验证码错误消息提示
+        ElMessage({
+          message: '账号未注册！！！',
+          type: 'error',
+        });
       } else if (res.data.code === 215) {
-        console.log('密码错误:', res.data.message);
+        // 密码错误消息提示
+        ElMessage({
+          message: '密码错误！！！',
+          type: 'error',
+        });
       } else if (res.data.code === 2012) {
-        console.log('服务异常:', res.data.message);
+        // 验证码错误消息提示
+        ElMessage({
+          message: '服务异常！！！',
+          type: 'error',
+        });
       }
+      // 清空表单
+      loginForm.value?.resetFields();
     })
     .catch((error) => {
-      console.log('登录失败:'); // 请求失败，打印错误信息
+      // 验证码错误消息提示
+      ElMessage({
+        message: '登录失败！！！',
+        type: 'error',
+      });
     });
 }
 
