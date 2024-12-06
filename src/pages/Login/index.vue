@@ -194,51 +194,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="scss">
-.login-card {
-  width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.forgot-password {
-  display: block;
-  text-align: right;
-  margin-left: auto;
-  color: #409eff;
-  cursor: pointer;
-  &:hover {
-    color: #74b6fc; /* 鼠标悬停时字体颜色变浅 */
-    text-decoration: underline; /* 鼠标悬停时显示下划线 */
-  }
-}
-
-.el-input-code {
-  width: 66%;
-}
-
-.el-image-code {
-  margin-left: auto;
-}
-
-.user-register {
-  color: #409eff;
-  cursor: pointer;
-  &:hover {
-    color: #74b6fc; /* 鼠标悬停时字体颜色变浅 */
-    text-decoration: underline; /* 鼠标悬停时显示下划线 */
-  }
-}
-
-.auto-login {
-  margin-right: auto;
-}
-
-.login-button {
-  width: 100%;
-}
+// 导入外部css样式
+@use './index.scss';
 </style>
