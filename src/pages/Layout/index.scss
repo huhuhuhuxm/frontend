@@ -1,0 +1,29 @@
+html,
+body
+.common-layout {
+  height: 100vh;
+}
+
+
+.el-header {
+  background-color: #00a9e7;
+  color: #000000;
+  line-height: 60px;
+}
+
+.el-aside {
+  background-color: #e6e8eb;
+  color: #000000;
+  text-align: center;
+  height: calc(100vh - 60px);;
+}
+
+.logo {
+  width: 113px;
+  height: 60px;
+  filter: grayscale(0) invert(0) sepia(1) hue-rotate(30deg) saturate(10);
+}
+
+.content {
+  height: 100%;
+}
