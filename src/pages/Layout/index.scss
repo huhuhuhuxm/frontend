@@ -11,11 +11,18 @@ body
   line-height: 60px;
 }
 
-.el-aside {
-  background-color: #e6e8eb;
-  color: #000000;
-  text-align: center;
-  height: calc(100vh - 60px);;
+// .el-aside {
+//   background-color: #a80e0e;
+//   color: #000000;
+//   text-align: center;
+//   height: calc(100vh - 60px);
+//   transition: width 0.30s ease-in-out; // 动画
+//   max-width: 200px;
+//   min-width: 64px;
+// }
+
+.el-menu-vertical {
+  height: calc(100vh - 60px);
 }
 
 .logo {
@@ -26,4 +33,14 @@ body
 
 .content {
   height: 100%;
+}
+
+
+.isCollapse-button {
+  background-color: transparent; /* 背景透明 */
+  border: none;                 /* 无边框 */
+  padding: 0;                   /* 去掉内边距 */
+  box-shadow: none;             /* 去掉阴影 */
+  display: flex;
+  margin-left: auto;
 }
