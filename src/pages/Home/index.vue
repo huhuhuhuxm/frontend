@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div>home页面</div>
+  <!-- <div>home页面</div> -->
 </template>
 
 <style scoped lang="scss">

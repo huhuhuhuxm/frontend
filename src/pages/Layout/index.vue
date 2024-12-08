@@ -6,6 +6,7 @@ import {
   Location,
   Setting,
 } from '@element-plus/icons-vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const isCollapse = ref(false);
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -19,6 +20,14 @@ const handleClose = (key: string, keyPath: string[]) => {
 function collapseOrUnfold() {
   isCollapse.value = !isCollapse.value;
 }
+
+// 路由激活与跳转
+const router = useRouter();
+
+// 菜单点击事件
+const handleSelect = (index:string) => {
+  router.push(index); // 跳转到指定路径
+};
 </script>
 
 <template>
@@ -37,36 +46,33 @@ function collapseOrUnfold() {
         <el-menu
           default-active="2"
           class="el-menu-vertical"
-          :collapse="isCollapse" 
+          :collapse="isCollapse"
           @open="handleOpen"
           @close="handleClose"
+          @select="handleSelect"
         >
           <el-button class="isCollapse-button" @click="collapseOrUnfold">
             <el-icon v-if="isCollapse"><DArrowRight /></el-icon>
             <el-icon v-else><DArrowLeft /></el-icon>
           </el-button>
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon><location /></el-icon>
-              <span>Navigator One</span>
-            </template>
-            <el-menu-item-group>
-              <template #title><span>Group One</span></template>
-              <el-menu-item index="1-1">item one</el-menu-item>
-              <el-menu-item index="1-2">item two</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group Two">
-              <el-menu-item index="1-3">item three</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="1-4">
-              <template #title><span>item four</span></template>
-              <el-menu-item index="1-4-1">item one</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-menu-item index="2">
-            <el-icon><icon-menu /></el-icon>
-            <template #title>Navigator Two</template>
+          <!-- 首页 -->
+          <el-menu-item index="/">
+            <el-icon><HomeFilled /></el-icon>
+            <template #title> 首页 </template>
           </el-menu-item>
+          <!-- 商品管理 -->
+          <el-sub-menu index="/product">
+            <template #title>
+              <el-icon><ShoppingTrolley /></el-icon>
+              <span>商品管理</span>
+            </template>
+            <el-menu-item index="/product/category">
+              <el-icon><Operation /></el-icon>
+              <span>分类维护</span>
+            </el-menu-item>
+          </el-sub-menu>
+
+          
           <el-menu-item index="3" disabled>
             <el-icon><document /></el-icon>
             <template #title>Navigator Three</template>
