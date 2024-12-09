@@ -20,7 +20,6 @@ body
 //   max-width: 200px;
 //   min-width: 64px;
 // }
-
 .el-menu-vertical {
   height: calc(100vh - 60px);
 }
@@ -32,7 +31,8 @@ body
 }
 
 .content {
-  height: 100%;
+  height: calc(100vh - 60px);
+  padding: auto;
 }
 
 
@@ -43,4 +43,9 @@ body
   box-shadow: none;             /* 去掉阴影 */
   display: flex;
   margin-left: auto;
+}
+
+.el-main {
+  height: calc(100vh - 60px);
+  padding: 15px;
 }

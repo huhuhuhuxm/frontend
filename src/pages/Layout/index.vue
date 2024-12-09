@@ -85,12 +85,11 @@ const handleSelect = (index:string) => {
 
         <!-- </el-aside> -->
 
-        <el-main>
-          <div class="content">
-            layout .....
+        <el-main class="el-main">
+          <!-- <div class="content"> -->
             <!-- 显示子路由页面 -->
             <router-view />
-          </div>
+          <!-- </div> -->
         </el-main>
       </el-container>
     </el-container>

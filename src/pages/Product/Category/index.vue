@@ -1,89 +1,91 @@
 <script setup lang="ts">
 import { getCategoryTreeList } from '@/apis/product/cagegory';
 import { CategoryTreeList } from '@/types/product';
-import { onMounted, reactive } from 'vue';
-
-interface User {
-  id: number;
-  date: string;
-  name: string;
-  address: string;
-  hasChildren?: boolean;
-  children?: User[];
-}
+import { computed, onMounted, reactive, ref } from 'vue';
+import type { ComponentSize } from 'element-plus';
 
 const treeProps = reactive({
   checkStrictly: false,
 });
 
-// 确定哪些行可以不能选中
-const selectable = (row: User) => ![1, 31].includes(row.id);
+// 表格数据
+const tableData = reactive<Array<CategoryTreeList>>([]);
 
-// console.log(await getCategoryTreeList());
-// 测试数据
-const tableData = reactive<Array<CategoryTreeList>>([
-  {
-    catId: 1,
-    name: 'Category 1',
-    parentCid: 0,
-    catLevel: 1,
-    showStatus: 1,
-    sort: 1,
-    icon: 'icon-url',
-    productUnit: 'unit',
-    productCount: 10,
-    createTime: '2024-01-01T00:00:00Z',
-    updateTime: '2024-01-02T00:00:00Z',
-    children: [
-      {
-        catId: 2,
-        name: 'Subcategory 1',
-        parentCid: 1,
-        catLevel: 2,
-        showStatus: 1,
-        sort: 2,
-        icon: 'sub-icon-url',
-        productUnit: 'sub-unit',
-        productCount: 5,
-        createTime: '2024-01-01T12:00:00Z',
-        updateTime: '2024-01-02T12:00:00Z',
-      },
-    ],
-  },
-]);
+// 分页相关配置
+const total = ref(tableData.length); // 总数据条数（模拟
+console.log(tableData.length);
+console.log(tableData);
+const pageSize = ref(10); // 每页条数
+const currentPage = ref(1); // 当前页码
+
+// 分页外观大小 default | small | large
+const size: ComponentSize = 'default';
+
+//分页是否显示
+const disabled = ref(false);
+
+// 计算当前页的数据
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  const end = start + pageSize.value;
+  console.log(start, end);
+  return tableData.slice(start, end);
+});
 
 // 获取商品分类树形列表
 function getTreeList() {
-  getCategoryTreeList().then((res) => {
-    console.log(res.data.data);
-    tableData.splice(0, tableData.length, ...res.data.data);
-  });
+  getCategoryTreeList()
+    .then((res) => {
+      tableData.splice(0, tableData.length, ...res.data.data);
+      console.log(tableData.length);
+      total.value = tableData.length;
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 // 挂载完毕
 onMounted(() => {
+  // 获取商品分类树形列表
   getTreeList();
 });
-
-
 </script>
 
 <template>
-  <div>
+  <div class="table-all">
+    <!-- 表格 -->
     <el-radio-group v-model="treeProps.checkStrictly">
-      <el-radio-button :value="true" label="true" />
-      <el-radio-button :value="false" label="false" />
+      <el-radio-button :value="true" label="单选" />
+      <el-radio-button :value="false" label="全选" />
     </el-radio-group>
     <el-table
-      :data="tableData"
+      class="table-box"
+      :data="paginatedData"
       :tree-props="treeProps"
       row-key="catId"
     >
-      <el-table-column type="selection" width="55" :selectable="selectable" />
-      <el-table-column prop="catId" label="catId" />
-      <el-table-column prop="name" label="Name" />
-      <el-table-column prop="icon" label="icon" />
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="catId" label="分类id" />
+      <el-table-column prop="name" label="分类名称" />
+      <el-table-column prop="icon" label="图标" />
+      <el-table-column prop="catLevel" label="层级" />
+      <el-table-column prop="createTime" label="创建时间" />
+      <el-table-column prop="updateTime" label="更新时间" />
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      class="pagination"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :page-sizes="[10, 50, 100]"
+      :size="size"
+      :disabled="disabled"
+      background="background"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    />
   </div>
+  <div class="pagination"></div>
 </template>
 
 <style scoped lang="scss">
