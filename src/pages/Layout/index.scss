@@ -1,9 +1,7 @@
 html,
-body
-.common-layout {
+body .common-layout {
   height: 100vh;
 }
-
 
 .el-header {
   background-color: #00a9e7;
@@ -11,15 +9,6 @@ body
   line-height: 60px;
 }
 
-// .el-aside {
-//   background-color: #a80e0e;
-//   color: #000000;
-//   text-align: center;
-//   height: calc(100vh - 60px);
-//   transition: width 0.30s ease-in-out; // 动画
-//   max-width: 200px;
-//   min-width: 64px;
-// }
 .el-menu-vertical {
   height: calc(100vh - 60px);
 }
@@ -35,12 +24,11 @@ body
   padding: auto;
 }
 
-
 .isCollapse-button {
   background-color: transparent; /* 背景透明 */
-  border: none;                 /* 无边框 */
-  padding: 0;                   /* 去掉内边距 */
-  box-shadow: none;             /* 去掉阴影 */
+  border: none; /* 无边框 */
+  padding: 0; /* 去掉内边距 */
+  box-shadow: none; /* 去掉阴影 */
   display: flex;
   margin-left: auto;
 }
@@ -48,4 +36,14 @@ body
 .el-main {
   height: calc(100vh - 60px);
   padding: 15px;
+}
+
+// 设置菜单的动画
+// TODO 没有效果 后续再看
+el-pagination {
+  transition: width 0.15s;
+  -webkit-transition: width 0.15s;
+  -moz-transition: width 0.15s;
+  -webkit-transition: width 0.15s;
+  -o-transition: width 0.15s;
 }

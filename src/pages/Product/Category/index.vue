@@ -4,8 +4,9 @@ import { CategoryTreeList } from '@/types/product';
 import { computed, onMounted, reactive, ref } from 'vue';
 import type { ComponentSize } from 'element-plus';
 
+// 表格单选还是全选
 const treeProps = reactive({
-  checkStrictly: false,
+  checkStrictly: true,
 });
 
 // 表格数据
@@ -24,13 +25,61 @@ const size: ComponentSize = 'default';
 //分页是否显示
 const disabled = ref(false);
 
-// 计算当前页的数据
+// 计算当前页的数据 搜索符合条件的数据
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
   const end = start + pageSize.value;
   console.log(start, end);
-  return tableData.slice(start, end);
+  return tableData
+    .filter(
+      (data) => {
+        console.log(data);
+        return !search.value ||
+        data.name.toLowerCase().includes(search.value.toLowerCase())
+      }
+    )
+    .slice(start, end);
 });
+
+// 搜索框内容
+const search = ref('');
+
+// 添加按钮 
+const handleEdit = (index: number, row: CategoryTreeList) => {
+  console.log(index, row);
+};
+
+// 删除按钮
+const handleDelete = (index: number, row: CategoryTreeList) => {
+  console.log(index, row);
+};
+
+// 搜索所有层级是否有符合搜索的商品
+function searchAllLevel(data:CategoryTreeList) {
+  if (data.children && data.children.length > 0) {
+  
+  } else {
+    return false;
+  }
+}
+
+// 按钮是否显示
+function buttonIsShow(row: CategoryTreeList ):boolean {
+  // 根据分类id判断是否显示按钮 
+  if (row.catLevel == 1 || row.catLevel == 2) {
+    return true;
+  }
+  return false;
+}
+
+// 按钮是否禁用
+function buttonIsDisabled(row: CategoryTreeList ): boolean {
+  // 根据是否有子数据来判断是否禁用按钮
+  if (row.children && row.children.length > 0) {
+    return true;
+  }
+  return false;
+}
 
 // 获取商品分类树形列表
 function getTreeList() {
@@ -71,6 +120,33 @@ onMounted(() => {
       <el-table-column prop="catLevel" label="层级" />
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column prop="updateTime" label="更新时间" />
+      <el-table-column align="right">
+        <template #header>
+          <el-input
+            v-model="search"
+            size="default"
+            placeholder="输入要搜索的内容"
+          />
+        </template>
+        <template #default="scope">
+          <el-button
+            v-if="buttonIsShow(scope.row)"
+            size="default"
+            type="primary"
+            @click="handleEdit(scope.$index, scope.row)"
+          >
+            添加
+          </el-button>
+          <el-button
+            :disabled="buttonIsDisabled(scope.row)"
+            size="default"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 分页 -->
     <el-pagination

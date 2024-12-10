@@ -42,11 +42,12 @@ const handleSelect = (index:string) => {
           />
         </router-link>
       </el-header>
-      <el-container>
+      <el-container class="menu-container">
         <el-menu
           default-active="2"
           class="el-menu-vertical"
           :collapse="isCollapse"
+          :collapse-transition="false"
           @open="handleOpen"
           @close="handleClose"
           @select="handleSelect"
