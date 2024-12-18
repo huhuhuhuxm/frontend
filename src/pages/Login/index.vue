@@ -170,10 +170,10 @@ function onSubmit() {
       // 清空表单
       loginForm.value?.resetFields();
     })
-    .catch((error) => {
+    .catch(() => {
       // 验证码错误消息提示
       ElMessage({
-        message: '登录失败！！！',
+        message: '服务异常！！！',
         type: 'error',
       });
     });

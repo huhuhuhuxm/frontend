@@ -8,3 +8,12 @@ export function getCategoryTreeList() {
     method: 'get'
   });
 }
+
+// 批量删除分类节点
+export function deleteCategoryByIds(categoryIds: number[]) {
+  return request({
+    url: '/product-api/product/v1/category/deleteCategories',
+    method: 'delete',
+    data: categoryIds
+  });
+}

@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { getCategoryTreeList } from '@/apis/product/cagegory';
+import {
+  deleteCategoryByIds,
+  getCategoryTreeList,
+} from '@/apis/product/cagegory';
 import { CategoryTreeList } from '@/types/product';
 import { computed, onMounted, reactive, ref } from 'vue';
-import type { ComponentSize } from 'element-plus';
+import { ElMessage, type ComponentSize, ElMessageBox } from 'element-plus';
 
 // 表格单选还是全选
 const treeProps = reactive({
@@ -31,49 +34,83 @@ const paginatedData = computed(() => {
   const end = start + pageSize.value;
   console.log(start, end);
   return tableData
-    .filter(
-      (data) => {
-        console.log(data);
-        return !search.value ||
+    .filter((data) => {
+      console.log(data);
+      return (
+        !search.value ||
         data.name.toLowerCase().includes(search.value.toLowerCase())
-      }
-    )
+      );
+    })
     .slice(start, end);
 });
 
 // 搜索框内容
 const search = ref('');
 
-// 添加按钮 
-const handleEdit = (index: number, row: CategoryTreeList) => {
-  console.log(index, row);
-};
+// 添加按钮
+const handleEdit = (index: number, row: CategoryTreeList) => {};
 
 // 删除按钮
-const handleDelete = (index: number, row: CategoryTreeList) => {
-  console.log(index, row);
+const handleDelete = (row: CategoryTreeList) => {
+  ElMessageBox.confirm('是否删除该分类？', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(() => {
+    deleteCategories([row.catId]);
+  });
+};
+// 根据catId删除分类节点
+function deleteCategories(catIds: number[]) {
+  deleteCategoryByIds(catIds)
+    .then((res) => {
+      if (res.data.code === 200) {
+        // 删除成功后弹出消息提示
+        ElMessage({
+          message: '删除成功！！！',
+          type: 'success',
+        });
+        // 删除成功后刷新数据
+        getTreeList();
+      }
+      console.log(res);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+let selectedCatIds: number[] = [];
+
+// 得到选中的分类cartId集合
+const getSelectedCatIds = (val: CategoryTreeList[]) => {
+  // 解构出cartId
+  selectedCatIds = val.map(({catId}) => {
+    return catId;
+  });
+  console.log(selectedCatIds);
 };
 
 // 搜索所有层级是否有符合搜索的商品
-function searchAllLevel(data:CategoryTreeList) {
+// TODO 待完成
+function searchAllLevel(data: CategoryTreeList) {
   if (data.children && data.children.length > 0) {
-  
   } else {
     return false;
   }
 }
 
 // 按钮是否显示
-function buttonIsShow(row: CategoryTreeList ):boolean {
-  // 根据分类id判断是否显示按钮 
-  if (row.catLevel == 1 || row.catLevel == 2) {
+function buttonIsShow(row: CategoryTreeList): boolean {
+  // 根据分类id判断是否显示按钮
+  if (row.catLevel === 1 || row.catLevel === 2) {
     return true;
   }
   return false;
 }
 
 // 按钮是否禁用
-function buttonIsDisabled(row: CategoryTreeList ): boolean {
+function buttonIsDisabled(row: CategoryTreeList): boolean {
   // 根据是否有子数据来判断是否禁用按钮
   if (row.children && row.children.length > 0) {
     return true;
@@ -112,6 +149,7 @@ onMounted(() => {
       :data="paginatedData"
       :tree-props="treeProps"
       row-key="catId"
+      @selection-change="getSelectedCatIds"
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="catId" label="分类id" />
@@ -141,7 +179,7 @@ onMounted(() => {
             :disabled="buttonIsDisabled(scope.row)"
             size="default"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDelete(scope.row)"
           >
             删除
           </el-button>
